@@ -1,0 +1,119 @@
+#navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1D1D1D;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+#powerbutton:hover {
+    color: crimson;
+    cursor: pointer;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 1280px;
+    margin-top: 150px;
+}
+
+#topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    background-color: #2B2929;
+    height: 45px;
+    border-radius: 10px 10px 0 0;
+    border-right: 1px solid #670039;
+    border-left: 1px solid #350180;
+    color: white;
+}
+
+#child1 span,
+#child3 span {
+    margin: 0 10px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#child1 span:hover,
+#child3 span:hover {
+    color: #bb86fc;
+}
+
+#child2 {
+    font-weight: 200;
+}
+
+#grid {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    row-gap: 50px;
+    height: 560px;
+    overflow: hidden;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    border-right: 1px solid #670039;
+    border-bottom: 1px solid #350180;
+    border-left: 1px solid #350180;
+    overflow: scroll;
+}
+
+#title {
+    display: flex;
+    align-items: center;
+    grid-row: 1;
+    grid-column: 1 / -1;
+    margin: 10px 0 0 40px;
+    font-size: 24px;
+    font-weight: 300;
+}
+
+.icon-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: grab;
+}
+
+#icon {
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    border-radius: 512px;
+    color: #6226b7bb;
+}
+
+#terminput {
+    width: 100%;
+    background-color: transparent;
+    border-radius: 0 0 10px 10px;
+}
+
+#terminput:focus {
+    border-right: 1px solid #670039;
+    border-bottom: 1px solid #350180;
+    border-left: 1px solid #350180;
+    /* box-shadow: 0 4px 12px rgba(89, 53, 141, 0.5); */
+}
+
+#inner-container,
+#termoutput,
+#grid {
+    scrollbar-width: none
+}

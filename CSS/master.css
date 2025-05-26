@@ -1,0 +1,45 @@
+@import './login.css';
+@import './user-profile.css';
+@import './popups.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ubuntu", sans-serif;
+    transition: 0.5s;
+    color: white;
+}
+
+/* * {
+  outline: 1px solid #f00 !important;
+} */
+
+body {
+    background-color: #222222;
+    background-image: url('../bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+button:hover {
+    opacity: 0.7;
+}
+
+input {
+    opacity: 1;
+    outline: none;
+}
+
+svg {
+    margin: 0 auto;
+}
+
+#source {
+    display: flex;
+    justify-content: center;
+}

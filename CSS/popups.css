@@ -1,0 +1,29 @@
+#popups {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    gap: 10px;
+    top: 15px;
+    right: 25px;
+}
+
+#err-200,
+#err-403,
+#err-401 {
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    z-index: 1000;
+}
+
+#err-403,
+#err-401 {
+    color: rgb(255, 72, 72);
+    background-color: rgb(157, 18, 18);
+}
+
+#err-200 {
+    color: rgb(255, 221, 72);
+    background-color: rgb(157, 101, 18);
+}
