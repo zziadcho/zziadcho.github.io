@@ -6,13 +6,14 @@ import { clearSession, createSession } from "../Utilities/SessionManager.js"
 
 const source = document.getElementById("source")
 
+// === LOGOUT FUNCTIONALITY ===
 export const Logout = async () => {
-    // Clear the session properly
     await clearSession()
     source.innerHTML = ""
     Login()
 }
 
+// === LOGIN FUNCTIONALITY ===
 export const Login = () => {
     const loginForm = document.getElementById("login-form")
     if (loginForm) loginForm.remove()
@@ -22,10 +23,10 @@ export const Login = () => {
     Constructor("input", { id: "password-input", placeholder: "Password", type: "password", name: "password" }, form)
     const loginButton = Constructor("button", { id: "loginbtn", textContent: "Login" }, form)
 
+    // === FORM SUBMISSION ===
     form.addEventListener("submit", async (event) => {
         event.preventDefault()
         
-        // Disable button during authentication
         loginButton.disabled = true
         loginButton.textContent = "Please wait..."
 
@@ -38,7 +39,7 @@ export const Login = () => {
                 return
             }
 
-            // Get authentication token
+            // === GET AUTH TOKEN ===
             const credentials = btoa(`${username}:${password}`)
             const response = await fetch("https://learn.zone01oujda.ma/api/auth/signin", {
                 method: "POST",
@@ -54,7 +55,7 @@ export const Login = () => {
 
             const token = await response.json()
             
-            // Validate the user identity with GraphQL
+            // === VALIDATE USER ===
             const usercheck = `
                 {
                     user {
@@ -65,13 +66,11 @@ export const Login = () => {
             
             const userData = await FetchQL(usercheck, token)
             
-            // Check for errors in the GraphQL response
             if (userData.errors) {
                 PopUp(401, "Authentication failed")
                 return
             }
             
-            // Ensure user data exists and matches
             if (!userData.data || !userData.data.user || !userData.data.user[0]) {
                 PopUp(401, "User data not found")
                 return
@@ -84,16 +83,13 @@ export const Login = () => {
                 return
             }
             
-            // Create secure session
+            // === CREATE SESSION & NAVIGATE ===
             await createSession(token, userLogin)
-            
-            // Navigate to user profile
             UserProfile()
         } catch (error) {
             console.error("Login error:", error)
             PopUp(500, "Login failed. Please try again.")
         } finally {
-            // Re-enable button
             loginButton.disabled = false
             loginButton.textContent = "Login"
         }

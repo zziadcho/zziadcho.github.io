@@ -1,8 +1,7 @@
 import { Constructor } from "./Constructor.js";
 
+// === BAR CHART GENERATOR ===
 export function createHorizontalBarChart(data) {
-    console.log(data);
-    
     const svg = Constructor("svg", { 
         id: "element", 
         style: 'width: 75%;height: 80%; position: relative;'
@@ -41,6 +40,7 @@ export function createHorizontalBarChart(data) {
         
     svg.innerHTML = bars;
     
+    // === TOOLTIP FUNCTIONALITY ===
     const tooltip = Constructor("div", {
         style: `
             position: absolute;
@@ -92,14 +92,14 @@ export function createHorizontalBarChart(data) {
     return svg;
 }
 
+// === LINE CHART GENERATOR ===
 export function createXPProgressionChart(data) {
-    console.log(data);
-    
     const svg = Constructor("svg", {
         id: "xp-chart",
         style: "width:75%; height: 400px;"
     });
     
+    // === DATA PROCESSING ===
     const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     
     let cumulativeXP = 0;
@@ -114,6 +114,7 @@ export function createXPProgressionChart(data) {
     
     if (points.length === 0) return svg;
     
+    // === CHART DIMENSIONS ===
     const margin = { top: 20, right: 60, bottom: 40, left: 60 };
     const width = 800 - margin.left - margin.right;
     const height = 360 - margin.top - margin.bottom;
@@ -122,6 +123,7 @@ export function createXPProgressionChart(data) {
     const maxDate = points[points.length - 1].date;
     const maxXP = points[points.length - 1].cumulativeXP;
     
+    // === GENERATE PATH DATA ===
     let pathData = '';
     points.forEach((point, index) => {
         const x = margin.left + (point.date - minDate) / (maxDate - minDate) * width;
@@ -134,8 +136,8 @@ export function createXPProgressionChart(data) {
         }
     });
     
+    // === RENDER CHART ===
     svg.innerHTML = `
-        <!-- Grid lines -->
         <defs>
             <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#444" stroke-width="1" opacity="0.3"/>
@@ -143,14 +145,12 @@ export function createXPProgressionChart(data) {
         </defs>
         <rect width="100%" height="100%" fill="url(#grid)" />
         
-        <!-- Main line -->
         <path d="${pathData}" 
               fill="none" 
               stroke="#ffffff" 
               stroke-width="2" 
               opacity="0.8"/>
         
-        <!-- Data points -->
         ${points.map(point => {
             const x = margin.left + (point.date - minDate) / (maxDate - minDate) * width;
             const y = margin.top + height - (point.cumulativeXP / maxXP * height);
@@ -170,7 +170,6 @@ export function createXPProgressionChart(data) {
             `;
         }).join('')}
         
-        <!-- Y-axis labels -->
         ${[0, 0.25, 0.5, 0.75, 1].map(ratio => {
             const y = margin.top + height - (ratio * height);
             const value = (maxXP * ratio / 1000).toFixed(0);
@@ -184,7 +183,6 @@ export function createXPProgressionChart(data) {
             `;
         }).join('')}
         
-        <!-- Total XP label -->
         <text x="${margin.left + width + 10}" 
               y="${margin.top + 15}" 
               fill="#ffffff" 
@@ -196,6 +194,7 @@ export function createXPProgressionChart(data) {
               font-size="14">${(maxXP / 1000).toFixed(0)}k</text>
     `;
     
+    // === TOOLTIP FUNCTIONALITY ===
     const tooltip = Constructor("div", {
         style: `
             position: absolute;

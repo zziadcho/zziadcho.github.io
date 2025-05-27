@@ -3,7 +3,7 @@ import { Terminal } from "../Utilities/Terminal.js"
 import { Logout } from "./Login-Logout.js"
 
 export const UserProfile = async () => {
-
+    // === SETUP ===
     const source = document.getElementById("source")
     const userLogin = localStorage.getItem("userlogin")
     const date = new Date()
@@ -16,6 +16,7 @@ export const UserProfile = async () => {
 
     source.innerHTML = ""
 
+    // === NAVBAR ===
     Constructor("div", { id: "navbar" }, source)
 
     Constructor("h3", { id: "activities", textContent: "GraphQL" }, navbar)
@@ -24,6 +25,7 @@ export const UserProfile = async () => {
     const logoutbtn = Constructor("span", { id: "powerbutton", class: "material-symbols-outlined", textContent: "power_settings_circle" }, navbar)
     logoutbtn.addEventListener("click", Logout)
 
+    // === TERMINAL CONTAINER ===
     Constructor("div", { id: "container" }, source)
     Constructor("div", { id: "topbar" }, container)
     Constructor("div", { id: "grid" }, container)
@@ -41,5 +43,6 @@ export const UserProfile = async () => {
 
     Constructor("input", { id: "terminput", placeholder: "Type your command..." }, container)
 
+    // === INITIALIZE TERMINAL ===
     Terminal()
 }

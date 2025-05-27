@@ -1,3 +1,4 @@
+// === DOM ELEMENT CONSTRUCTOR ===
 export const Constructor = (tag, attribues = {}, appendTarget) => {
     let element
     if (tag === "svg" || tag === "line") {

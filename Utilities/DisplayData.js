@@ -4,6 +4,7 @@ import { createHorizontalBarChart, createXPProgressionChart } from "./GraphConst
 
 const token = localStorage.getItem("JWT")
 
+// === GRAPHQL QUERIES ===
 const userinfoQuery = `
     {
         user {
@@ -48,6 +49,7 @@ const Audits = `
 }
 `
 
+// === DATA DISPLAY FUNCTIONS ===
 export const DisplayProjectXP = async () => {
   const response = await FetchQL(Projects, token)
   const data = response.data.transaction  
@@ -66,6 +68,7 @@ export const DisplayAuditInfo = async () => {
   const response = await FetchQL(Audits, token);
   const auditData = response.data.user[0];
 
+  // === AUDIT DISPLAY CONSTRUCTION ===
   const container = Constructor("div", {
     style: "color: white; font-family: monospace; line-height: 1.4;"
   });
@@ -109,7 +112,6 @@ export const DisplayAuditInfo = async () => {
     style: "color: #FFA500; margin-bottom: 10px;"
   }, container);
 
-
   Constructor("div", {
     textContent: `📊 Success/Failure Ratio: ${(successfulAudits / failedAudits).toFixed(1)}:1`,
     style: "margin-top: 10px;"
@@ -135,6 +137,7 @@ export const DisplayUserInfo = async () => {
   const response = await FetchQL(userinfoQuery, token)
   const userInfo = response.data.user[0].attrs
 
+  // === USER INFO DISPLAY CONSTRUCTION ===
   const container = Constructor("div", {
     style: "color: white; font-family: monospace; line-height: 1.4;"
   })
@@ -212,6 +215,7 @@ export const DisplayUserInfo = async () => {
     }, container)
   }
 
+  // === EMERGENCY CONTACT SECTION ===
   Constructor("div", {
     textContent: "--- Emergency Contact ---",
     style: "color: #875FFF; margin-top: 10px; margin-bottom: 5px;"
@@ -229,6 +233,7 @@ export const DisplayUserInfo = async () => {
     textContent: `Phone: ${userInfo.emergencyTel}`
   }, container)
 
+  // === ADDITIONAL INFO SECTION ===
   Constructor("div", {
     textContent: "--- Additional Info ---",
     style: "color: #875FFF; margin-top: 10px; margin-bottom: 5px;"
@@ -252,6 +257,7 @@ export const DisplayUserInfo = async () => {
     }, container)
   }
 
+  // === TERMS STATUS SECTION ===
   Constructor("div", {
     textContent: "--- Terms Status ---",
     style: "color: #875FFF; margin-top: 10px; margin-bottom: 5px;"

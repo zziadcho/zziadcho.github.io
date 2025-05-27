@@ -1,5 +1,6 @@
 import { clearSession } from "./SessionManager.js"
 
+// === API REQUEST HANDLING ===
 export const FetchQL = async (query, token) => {
     try {
         if (!token) {
@@ -17,10 +18,9 @@ export const FetchQL = async (query, token) => {
             })
         })
         
-        // Handle authentication errors
         if (response.status === 401 || response.status === 403) {
             await clearSession()
-            window.location.reload() // Force reload on auth failure
+            window.location.reload()
             throw new Error("Authentication failed")
         }
         

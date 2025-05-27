@@ -2,6 +2,7 @@ import { Constructor } from "./Constructor.js"
 import { DisplayAuditInfo, DisplayOvertimeXP, DisplayProjectXP, DisplayUserInfo } from "./DisplayData.js"
 
 export const Terminal = () => {
+    // === STATE MANAGEMENT ===
     const cmdHistory = []
     const grid = document.getElementById("grid")
     const termcommand = document.getElementById("terminput")
@@ -11,7 +12,7 @@ export const Terminal = () => {
     let historyIndex = -1
     let svgDisplayed = false
 
-    // Enhanced keyboard event handling
+    // === EVENT HANDLERS ===
     document.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             handleEnterKey()
@@ -27,8 +28,8 @@ export const Terminal = () => {
         }
     })
 
+    // === COMMAND HANDLING ===
     const handleEnterKey = () => {
-        // Clear terminal if SVG was displayed and user enters new command
         if (svgDisplayed) {
             grid.innerHTML = ""
             cmdOutput("Terminal cleared - SVG chart was displayed")
@@ -39,12 +40,9 @@ export const Terminal = () => {
             shouldClear = false
         }
 
-        // if (shouldWarn) warning()
-
         const termCommand = termcommand.value.trim()
         if (termCommand === "") return
 
-        // Display the command that was entered
         cmdLine(`${termCommand}`)
 
         cmdHistory.push(termCommand)
@@ -62,22 +60,19 @@ export const Terminal = () => {
             scrollToBottom()
         }, 100)
     }
-    const scrollToBottom = () => {
-        // Scroll the grid container to bottom
-        grid.scrollTop = grid.scrollHeight
 
-        // If grid is inside another scrollable container, scroll that too
+    const scrollToBottom = () => {
+        grid.scrollTop = grid.scrollHeight
         const scrollableParent = grid.closest('[style*="overflow"]') || document.documentElement
         if (scrollableParent === document.documentElement) {
             window.scrollTo(0, document.body.scrollHeight)
         } else {
             scrollableParent.scrollTop = scrollableParent.scrollHeight
         }
-
-        // Also ensure the terminal input stays in view
         termcommand.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
 
+    // === COMMAND EXECUTION ===
     const executeCommand = (cmd, args) => {
         switch (cmd.toLowerCase()) {
             case "clear":
@@ -106,8 +101,15 @@ export const Terminal = () => {
         }
     }
 
+    // === GRAPH COMMANDS ===
     const graphcmd = async (args) => {
         const [subcmd, ...subargs] = args
+
+        // Clear terminal before displaying any SVG
+        if (["audit", "whoami", "projects", "overtimexp"].includes(subcmd)) {
+            grid.innerHTML = ""
+            cmdLine(`graphctl ${subcmd}`)
+        }
 
         switch (subcmd) {
             case "audit":
@@ -132,8 +134,7 @@ export const Terminal = () => {
                 try {
                     const element = await DisplayProjectXP()
                     grid.appendChild(element)
-                    shouldWarn = true
-                    svgDisplayed = true // Mark that SVG was displayed
+                    svgDisplayed = true
                 } catch (error) {
                     errorOutput(`Error loading projects: ${error.message}`)
                 }
@@ -143,8 +144,7 @@ export const Terminal = () => {
                 try {
                     const element = await DisplayOvertimeXP()
                     grid.appendChild(element)
-                    shouldWarn = true
-                    svgDisplayed = true // Mark that SVG was displayed
+                    svgDisplayed = true
                 } catch (error) {
                     errorOutput(`Error loading overtime XP: ${error.message}`)
                 }
@@ -170,15 +170,16 @@ export const Terminal = () => {
         helpText.forEach(line => cmdOutput(line))
     }
 
+    // === HISTORY NAVIGATION ===
     const navigateHistory = (direction) => {
         if (cmdHistory.length === 0) return
 
-        if (direction === -1) { // Up arrow
+        if (direction === -1) {
             if (historyIndex < cmdHistory.length - 1) {
                 historyIndex++
                 termcommand.value = cmdHistory[cmdHistory.length - 1 - historyIndex]
             }
-        } else { // Down arrow
+        } else {
             if (historyIndex > 0) {
                 historyIndex--
                 termcommand.value = cmdHistory[cmdHistory.length - 1 - historyIndex]
@@ -189,6 +190,7 @@ export const Terminal = () => {
         }
     }
 
+    // === TAB COMPLETION ===
     const handleTabCompletion = () => {
         const currentInput = termcommand.value
         const commands = ["clear", "help", "graphctl", "history", "ls", "pwd", "echo"]
@@ -196,13 +198,11 @@ export const Terminal = () => {
 
         const parts = currentInput.split(" ")
         if (parts.length === 1) {
-            // Complete main commands
             const matches = commands.filter(cmd => cmd.startsWith(parts[0]))
             if (matches.length === 1) {
                 termcommand.value = matches[0]
             }
         } else if (parts[0] === "graphctl" && parts.length === 2) {
-            // Complete graphctl subcommands
             const matches = graphctlOptions.filter(opt => opt.startsWith(parts[1]))
             if (matches.length === 1) {
                 termcommand.value = `graphctl ${matches[0]}`
@@ -210,6 +210,7 @@ export const Terminal = () => {
         }
     }
 
+    // === STANDARD COMMANDS ===
     const unknowncmd = (cmd) => {
         errorOutput(`Unknown command '${cmd}'! Try: help`)
     }
@@ -217,7 +218,7 @@ export const Terminal = () => {
     const clearcmd = () => {
         grid.innerHTML = ""
         shouldClear = true
-        svgDisplayed = false // Reset SVG flag when manually clearing
+        svgDisplayed = false
     }
 
     const helpcmd = () => {
@@ -261,6 +262,7 @@ export const Terminal = () => {
         cmdOutput(message || "")
     }
 
+    // === OUTPUT HANDLERS ===
     const cmdLine = (command) => {
         const cmd = Constructor("div", { id: "cmd" }, grid)
         Constructor("span", {
@@ -282,7 +284,6 @@ export const Terminal = () => {
             textContent: text,
             style: "color: white; margin-left: 20px;"
         }, grid)
-        // Auto-scroll after adding content
         setTimeout(() => scrollToBottom(), 50)
     }
 
@@ -291,10 +292,9 @@ export const Terminal = () => {
             textContent: text,
             style: "color: #FF6B6B; margin-left: 20px;"
         }, grid)
-        // Auto-scroll after adding content
         setTimeout(() => scrollToBottom(), 50)
     }
 
-    // Initialize terminal
+    // === INITIALIZATION ===
     cmdOutput("Terminal initialized. Type 'help' for available commands.")
 }

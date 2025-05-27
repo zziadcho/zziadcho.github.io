@@ -1,4 +1,6 @@
 import { Constructor } from "./Constructor.js"
+
+// === POPUP SYSTEM ===
 const popupParent = Constructor("div", { "id": "popups" }, document.getElementById("source"))
 
 export const PopUp = (code, errText) => {

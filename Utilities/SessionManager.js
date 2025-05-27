@@ -1,109 +1,71 @@
 import { FetchQL } from "./FetchQL.js"
 
-// Session storage keys
+// === SESSION MANAGEMENT ===
 const TOKEN_KEY = "JWT"
 const USER_KEY = "userlogin"
-const EXPIRE_KEY = "session_expires"
+const LAST_VALIDATION_KEY = "last_validation"
+const VALIDATION_CACHE = 10000
 
-/**
- * Creates a secure session with token validation
- * @param {string} token - The JWT token
- * @param {string} username - The username
- */
+let validationInProgress = false
+let validationPromise = null
+
 export const createSession = async (token, username) => {
-    if (!token || !username) {
-        throw new Error("Invalid session data")
-    }
-    
-    // Store the token and user info
     localStorage.setItem(TOKEN_KEY, token)
     localStorage.setItem(USER_KEY, username)
-    
-    // Set expiration (2 hours from now)
-    const expiresAt = Date.now() + (2 * 60 * 60 * 1000)
-    localStorage.setItem(EXPIRE_KEY, expiresAt)
-    
+    localStorage.setItem(LAST_VALIDATION_KEY, Date.now().toString())
     return true
 }
 
-/**
- * Validates the current session with the server
- * @returns {Promise<boolean>} Whether the session is valid
- */
 export const validateSession = async () => {
+    if (validationInProgress) return validationPromise
+    
+    validationInProgress = true
+    validationPromise = _doValidate()
+    validationPromise.finally(() => validationInProgress = false)
+    
+    return validationPromise
+}
+
+const _doValidate = async () => {
     const token = localStorage.getItem(TOKEN_KEY)
     const username = localStorage.getItem(USER_KEY)
-    const expiresAt = localStorage.getItem(EXPIRE_KEY)
+    const lastValidation = localStorage.getItem(LAST_VALIDATION_KEY)
     
-    // Check if token exists and has not expired
-    if (!token || !username || !expiresAt) {
-        return false
-    }
+    if (!token || !username) return false
     
-    // Check if session has expired
-    if (Date.now() > parseInt(expiresAt)) {
-        await clearSession()
-        return false
-    }
+    if (lastValidation && (Date.now() - parseInt(lastValidation) < VALIDATION_CACHE)) 
+        return true
     
-    // Validate token with server using a simple query
     try {
-        const validationQuery = `
-            {
-                user {
-                    login
-                }
-            }
-        `
+        const query = `{ user { login } }`
+        const response = await FetchQL(query, token)
         
-        const response = await FetchQL(validationQuery, token)
-        
-        // Check for errors or invalid responses
-        if (response.errors || !response.data || !response.data.user) {
-            await clearSession()
+        if (!response.data?.user?.[0]?.login) {
+            clearSession()
             return false
         }
         
-        // Verify username matches
-        const serverUsername = response.data.user[0]?.login
-        if (!serverUsername || serverUsername !== username) {
-            await clearSession()
+        if (response.data.user[0].login !== username) {
+            clearSession()
             return false
         }
         
-        // Refresh the expiration time
-        const newExpiresAt = Date.now() + (2 * 60 * 60 * 1000)
-        localStorage.setItem(EXPIRE_KEY, newExpiresAt)
-        
+        localStorage.setItem(LAST_VALIDATION_KEY, Date.now().toString())
         return true
     } catch (error) {
-        console.error("Session validation error:", error)
-        await clearSession()
+        if (error.name === "TypeError" && error.message.includes("NetworkError") && lastValidation)
+            return true
+            
+        clearSession()
         return false
     }
 }
 
-/**
- * Properly clears the current session
- */
-export const clearSession = async () => {
+export const clearSession = () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
-    localStorage.removeItem(EXPIRE_KEY)
+    localStorage.removeItem(LAST_VALIDATION_KEY)
 }
 
-/**
- * Gets the current token if session is valid
- * @returns {string|null} The JWT token or null
- */
-export const getToken = () => {
-    return localStorage.getItem(TOKEN_KEY)
-}
-
-/**
- * Gets the current username if session is valid
- * @returns {string|null} The username or null
- */
-export const getUsername = () => {
-    return localStorage.getItem(USER_KEY)
-}
+export const getToken = () => localStorage.getItem(TOKEN_KEY)
+export const getUsername = () => localStorage.getItem(USER_KEY)
