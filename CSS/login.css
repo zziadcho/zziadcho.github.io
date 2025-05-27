@@ -29,18 +29,6 @@
     opacity: 1 !important;
 }
 
-#login-form button {
-    text-align: center;
-    padding: 0 0 0 2px;
-    height: 35px;
-    width: 35px;
-    color: white;
-    font-size: 32px;
-    background-color: transparent;
-    border: 1px solid lightgray;
-    border-radius: 512px;
-}
-
 #loginbtn {
     display: none;
 }

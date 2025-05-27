@@ -50,10 +50,11 @@
     align-items: center;
 }
 
-#child3 span{
+#child3 span {
     padding-left: 10px;
 }
-#child3 span:hover  {
+
+#child3 span:hover {
     color: #670039;
     cursor: pointer;
 }
@@ -119,16 +120,20 @@
 }
 
 #terminput {
+    margin-top: 5px;
     width: 100%;
     padding: 8px 15px;
     background-color: transparent;
-    border-radius: 0 0 10px 10px;
-}
-
-#terminput:focus {
     border-right: 1px solid #670039;
     border-bottom: 1px solid #350180;
     border-left: 1px solid #350180;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    opacity: 0.7;
+}
+
+#terminput:focus {
+    opacity: 1;
 }
 
 #inner-container,

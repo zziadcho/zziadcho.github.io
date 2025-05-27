@@ -2,8 +2,6 @@ import { Constructor } from "./Constructor.js"
 import { FetchQL } from "./FetchQL.js"
 import { createHorizontalBarChart, createXPProgressionChart } from "./GraphConstructor.js"
 
-const token = localStorage.getItem("JWT")
-
 // === GRAPHQL QUERIES ===
 const userinfoQuery = `
     {
@@ -51,6 +49,9 @@ const Audits = `
 
 // === DATA DISPLAY FUNCTIONS ===
 export const DisplayProjectXP = async () => {
+  const token = localStorage.getItem("JWT")
+  if (!token) throw new Error("No authentication token provided")
+  
   const response = await FetchQL(Projects, token)
   const data = response.data.transaction  
   const svg = createHorizontalBarChart(data)
@@ -58,6 +59,9 @@ export const DisplayProjectXP = async () => {
 }
 
 export const DisplayOvertimeXP = async () => {
+  const token = localStorage.getItem("JWT")
+  if (!token) throw new Error("No authentication token provided")
+  
   const response = await FetchQL(Projects, token)
   const data = response.data.transaction
   const svg = createXPProgressionChart(data)
@@ -65,6 +69,9 @@ export const DisplayOvertimeXP = async () => {
 }
 
 export const DisplayAuditInfo = async () => {
+  const token = localStorage.getItem("JWT")
+  if (!token) throw new Error("No authentication token provided")
+  
   const response = await FetchQL(Audits, token);
   const auditData = response.data.user[0];
 
@@ -134,6 +141,10 @@ export const DisplayAuditInfo = async () => {
 };
 
 export const DisplayUserInfo = async () => {
+  // Get fresh token each time function is called
+  const token = localStorage.getItem("JWT")
+  if (!token) throw new Error("No authentication token provided")
+  
   const response = await FetchQL(userinfoQuery, token)
   const userInfo = response.data.user[0].attrs
 

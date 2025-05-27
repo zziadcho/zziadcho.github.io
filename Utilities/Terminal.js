@@ -13,16 +13,27 @@ export const Terminal = () => {
     let svgDisplayed = false
 
     // === EVENT HANDLERS ===
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            handleEnterKey()
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault()
-            navigateHistory(-1)
-        } else if (e.key === "ArrowDown") {
-            e.preventDefault()
-            navigateHistory(1)
-        } else if (e.key === "Tab") {
+    const handleTerminalKeydown = (e) => {
+        if (document.activeElement === termcommand) {
+            if (e.key === "Enter") {
+                handleEnterKey()
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault()
+                navigateHistory(-1)
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault()
+                navigateHistory(1)
+            } else if (e.key === "Tab") {
+                e.preventDefault()
+                handleTabCompletion()
+            }
+        }
+    }
+    
+    document.addEventListener("keydown", handleTerminalKeydown)
+    
+    termcommand.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") {
             e.preventDefault()
             handleTabCompletion()
         }
@@ -297,4 +308,8 @@ export const Terminal = () => {
 
     // === INITIALIZATION ===
     cmdOutput("Terminal initialized. Type 'help' for available commands.")
+
+    return () => {
+        document.removeEventListener("keydown", handleTerminalKeydown)
+    }
 }
