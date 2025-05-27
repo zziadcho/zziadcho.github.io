@@ -3,11 +3,7 @@ import { Terminal } from "../Utilities/Terminal.js"
 import { Logout } from "./Login-Logout.js"
 
 export const UserProfile = async () => {
-    const token = localStorage.getItem("JWT");
-    if (!token) {
-        Login(); // Fallback if token is missing
-        return;
-    }
+
     const source = document.getElementById("source")
     const userLogin = localStorage.getItem("userlogin")
     const date = new Date()

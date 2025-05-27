@@ -3,6 +3,7 @@ import { FetchQL } from "./FetchQL.js"
 import { createHorizontalBarChart, createXPProgressionChart } from "./GraphConstructor.js"
 
 const token = localStorage.getItem("JWT")
+
 const userinfoQuery = `
     {
         user {
@@ -49,7 +50,7 @@ const Audits = `
 
 export const DisplayProjectXP = async () => {
   const response = await FetchQL(Projects, token)
-  const data = response.data.transaction
+  const data = response.data.transaction  
   const svg = createHorizontalBarChart(data)
   return svg
 }

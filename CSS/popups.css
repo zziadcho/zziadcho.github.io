@@ -1,10 +1,44 @@
 #popups {
     display: flex;
     flex-direction: column;
-    position: absolute;
+    position: fixed;
     gap: 10px;
-    top: 15px;
-    right: 25px;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: auto;
+    max-width: calc(100% - 40px);
+}
+
+#popups div {
+    background-color: rgba(40, 40, 40, 0.95);
+    color: white;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid #ff6b6b;
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+    word-break: break-word;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 480px) {
+    #popups {
+        top: 10px;
+        right: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    #popups div {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
 }
 
 #err-200,

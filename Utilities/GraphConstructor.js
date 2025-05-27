@@ -100,10 +100,8 @@ export function createXPProgressionChart(data) {
         style: "width:75%; height: 400px;"
     });
     
-    // Sort data by date
     const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     
-    // Calculate cumulative XP
     let cumulativeXP = 0;
     const points = sortedData.map(item => {
         cumulativeXP += item.amount;
@@ -116,17 +114,14 @@ export function createXPProgressionChart(data) {
     
     if (points.length === 0) return svg;
     
-    // Get dimensions
     const margin = { top: 20, right: 60, bottom: 40, left: 60 };
     const width = 800 - margin.left - margin.right;
     const height = 360 - margin.top - margin.bottom;
     
-    // Calculate scales
     const minDate = points[0].date;
     const maxDate = points[points.length - 1].date;
     const maxXP = points[points.length - 1].cumulativeXP;
     
-    // Create path for line
     let pathData = '';
     points.forEach((point, index) => {
         const x = margin.left + (point.date - minDate) / (maxDate - minDate) * width;
@@ -139,7 +134,6 @@ export function createXPProgressionChart(data) {
         }
     });
     
-    // Create SVG content
     svg.innerHTML = `
         <!-- Grid lines -->
         <defs>
@@ -202,7 +196,6 @@ export function createXPProgressionChart(data) {
               font-size="14">${(maxXP / 1000).toFixed(0)}k</text>
     `;
     
-    // Create tooltip
     const tooltip = Constructor("div", {
         style: `
             position: absolute;
@@ -221,7 +214,6 @@ export function createXPProgressionChart(data) {
     
     document.body.appendChild(tooltip);
     
-    // Add event listeners for tooltip
     svg.addEventListener('mouseover', (e) => {
         if (e.target.classList.contains('data-point')) {
             const project = e.target.getAttribute('data-project');
