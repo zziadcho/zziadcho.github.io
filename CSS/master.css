@@ -9,7 +9,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Ubuntu", sans-serif;
-    transition: 0.3s; /* faster transition for better mobile experience */
+    transition: 0.5s;
     color: white;
 }
 
@@ -24,8 +24,6 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    min-height: 100vh; /* ensure full height on mobile */
-    padding: 10px; /* add some padding for smaller screens */
 }
 
 button:hover {
@@ -39,24 +37,9 @@ input {
 
 svg {
     margin: 0 auto;
-    max-width: 100%; /* ensure SVG is responsive */
 }
 
 #source {
     display: flex;
     justify-content: center;
-    width: 100%;
-    max-width: 100vw;
-    overflow-x: hidden; /* prevent horizontal scroll */
-}
-
-/* Simple media query for smaller screens */
-@media (max-width: 768px) {
-    input, button {
-        font-size: 16px; /* prevent iOS zoom on focus */
-    }
-    
-    svg {
-        height: auto; /* maintain aspect ratio */
-    }
 }
