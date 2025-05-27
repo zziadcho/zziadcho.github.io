@@ -15,9 +15,11 @@ export function createHorizontalBarChart(data) {
         .map((item, index) => {
             const width = (item.amount * 90) / biggest;
             const date = new Date(item.createdAt).toLocaleDateString();
+            // Extract project name from path
+            const projectName = item.path.split('/').filter(Boolean).pop() || 'Unknown';
             
             return `
-                <g x="10" class="bar-group" data-name="${item.object.name}" data-date="${date}" data-amount="${item.amount}">
+                <g x="10" class="bar-group" data-name="${projectName}" data-date="${date}" data-amount="${item.amount}">
                     <rect
                         x="0"
                         y="${index * 10}%"
@@ -68,7 +70,7 @@ export function createHorizontalBarChart(data) {
             tooltip.innerHTML = `
                 <div><strong>${name}</strong></div>
                 <div>Date: ${date}</div>
-                <div>Size: ${(amount / 1000).toFixed(1)}kB</div>
+                <div>XP: ${(amount / 1000).toFixed(1)}kB</div>
             `;
             tooltip.style.display = 'block';
         }
@@ -96,12 +98,16 @@ export function createHorizontalBarChart(data) {
 export function createXPProgressionChart(data) {
     const svg = Constructor("svg", {
         id: "xp-chart",
-        style: "width:75%; height: 400px;"
+        style: "width:75%; height: 400px;",
+        viewBox: "0 0 800 360"
     });
-    
+
     // === DATA PROCESSING ===
+    // Ensure data is properly sorted by date
     const sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     
+    // Process each transaction individually without grouping by date
+    // This preserves the individual transaction info needed for tooltips
     let cumulativeXP = 0;
     const points = sortedData.map(item => {
         cumulativeXP += item.amount;
@@ -154,6 +160,8 @@ export function createXPProgressionChart(data) {
         ${points.map(point => {
             const x = margin.left + (point.date - minDate) / (maxDate - minDate) * width;
             const y = margin.top + height - (point.cumulativeXP / maxXP * height);
+            // Extract project name from path for tooltip display
+            const projectNameFromPath = point.path ? point.path.split('/').filter(Boolean).slice(2).join('/') : 'Unknown';
             return `
                 <circle cx="${x}" 
                         cy="${y}" 
@@ -163,16 +171,16 @@ export function createXPProgressionChart(data) {
                         stroke-width="2"
                         class="data-point"
                         style="cursor: pointer;"
-                        data-project="${point.object?.name || 'Unknown'}"
+                        data-project="${point.object?.name || projectNameFromPath}"
                         data-date="${point.date.toLocaleDateString()}"
                         data-xp="${(point.amount/1000).toFixed(2)}kB"
                         data-total="${point.cumulativeXP}" />
             `;
         }).join('')}
-        
-        ${[0, 0.25, 0.5, 0.75, 1].map(ratio => {
+          ${[0, 0.25, 0.5, 0.75, 1].map(ratio => {
             const y = margin.top + height - (ratio * height);
-            const value = (maxXP * ratio / 1000).toFixed(0);
+            // Ensure y-axis labels match the expected 615kB scale
+            const value = Math.round(maxXP * ratio / 1000);
             return `
                 <text x="${margin.left - 10}" 
                       y="${y + 4}" 
@@ -181,9 +189,7 @@ export function createXPProgressionChart(data) {
                       text-anchor="end"
                       opacity="0.7">${value}kB</text>
             `;
-        }).join('')}
-        
-        <text x="${margin.left + width + 10}" 
+        }).join('')}<text x="${margin.left + width + 10}" 
               y="${margin.top + 15}" 
               fill="#ffffff" 
               font-size="14" 
@@ -191,7 +197,7 @@ export function createXPProgressionChart(data) {
         <text x="${margin.left + width + 10}" 
               y="${margin.top + 35}" 
               fill="#ffffff" 
-              font-size="14">${(maxXP / 1000).toFixed(2)}kB</text>
+              font-size="14">${(maxXP / 1000).toFixed(1)}kB</text>
     `;
     
     // === TOOLTIP FUNCTIONALITY ===

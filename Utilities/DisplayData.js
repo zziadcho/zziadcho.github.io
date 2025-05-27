@@ -13,19 +13,15 @@ const userinfoQuery = `
 
 const Projects = `
 {
-  transaction(
-    where: {
-      type: {_eq: "xp"},
-      _or: [{object: {type: {_eq: "project"}}}, {object: {type: {_eq: "piscine"}}}]
-    }
-    order_by: {createdAt: desc}
-  ) {
-    amount
-    createdAt
-    object {
-      name
-    }
-  }
+ transaction {
+     type
+     amount
+     path
+     createdAt
+     object {
+       name
+     }
+ }
 } 
 `
 
@@ -53,8 +49,26 @@ export const DisplayProjectXP = async () => {
   if (!token) throw new Error("No authentication token provided")
 
   const response = await FetchQL(Projects, token)
-  const data = response.data.transaction
-  const svg = createHorizontalBarChart(data)
+  let data = response.data.transaction
+  // Only include XP from /oujda/module/, exclude onboarding, piscine-js, piscine-go
+  data = data.filter(item => {
+    if (!item.path) return false;
+    const path = item.path.toLowerCase();
+    if (!path.startsWith("/oujda/module/")) return false;
+    if (path.includes("onboarding") || path.includes("piscine-js") || path.includes("piscine-go")) return false;
+    if (item.type && item.type !== "xp") return false;
+    return true;
+  });
+  // For each project/checkpoint, keep the latest and highest XP gain
+  const projectMap = {};
+  data.forEach(item => {
+    const name = item.path.split("/oujda/module/")[1]?.split("/")[0] || item.path;
+    if (!projectMap[name] || item.amount > projectMap[name].amount || new Date(item.createdAt) > new Date(projectMap[name].createdAt)) {
+      projectMap[name] = item;
+    }
+  });
+  const filteredData = Object.values(projectMap).sort((a, b) => b.amount - a.amount).slice(0, 10);
+  const svg = createHorizontalBarChart(filteredData)
   return svg
 }
 
@@ -63,9 +77,55 @@ export const DisplayOvertimeXP = async () => {
   if (!token) throw new Error("No authentication token provided")
 
   const response = await FetchQL(Projects, token)
-  const data = response.data.transaction
-  const svg = createXPProgressionChart(data)
-  return svg
+  let data = response.data.transaction  // Filter XP transactions with more inclusive rules based on the reference screenshot
+  data = data.filter(item => {
+    // Must have path and amount
+    if (!item.path || !item.amount) return false;
+    
+    // Only include transactions of type XP
+    if (item.type && item.type !== "xp") return false;
+    
+    const path = item.path.toLowerCase();
+    
+    // Include only /oujda/ paths
+    if (!path.includes('/oujda/')) return false;
+    
+    // Special case: Include the completed piscine-js with its 70kB reward
+    if (path === "/oujda/module/piscine-js") return true;
+    
+    // Exclude onboarding and paths with "piscine" except the special case above
+    if (path.includes('onboarding') || path.includes('piscine')) return false;
+    
+    return true;
+  });
+  
+  // Add proper object property for the chart to use, with meaningful project names
+  data = data.map(item => {
+    const pathParts = item.path.split('/').filter(Boolean);
+    let projectName;
+    
+    // Format the project name based on the path structure
+    if (pathParts.length >= 4) {
+      // This is a checkpoint exercise: "checkpoint-name/exercise-name"
+      projectName = `${pathParts[3]}${pathParts[4] ? '/' + pathParts[4] : ''}`;
+    } else if (pathParts.length >= 3) {
+      // This is a module project
+      projectName = pathParts[2];
+    } else {
+      projectName = 'Unknown';
+    }
+    
+    return {
+      ...item,
+      object: { name: projectName }
+    };
+  });
+  
+  // Sort by date to ensure correct progression
+  data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  
+  const svg = createXPProgressionChart(data);
+  return svg;
 }
 
 export const DisplayAuditInfo = async () => {

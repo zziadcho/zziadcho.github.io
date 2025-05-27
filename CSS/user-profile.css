@@ -148,6 +148,9 @@
     #child3 span {
         font-size: 20px;
     }
+    #grid {
+        height: 420px;
+    }
 }
 
 @media (max-width: 480px) {

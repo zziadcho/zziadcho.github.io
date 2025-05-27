@@ -173,11 +173,11 @@ export const Terminal = () => {
     const graphHelpCmd = () => {
         const helpText = [
             "  Usage: graphctl <option>:",
-            "  whoami      Display user information",
-            "  projects    Show project XP chart",
-            "  overtimexp  Show XP progression over time",
-            "  audit       Show audit percentage",
-            "  help        Show this help message"
+            "  overtimexp:   - Show XP progression over time",
+            "  projects:     - Show project XP chart",
+            "  audit:        - Show audit percentage",
+            "  whoami:       - Display user information",
+            "  help:         - Show this help message"
         ]
         helpText.forEach(line => cmdOutput(line))
     }
