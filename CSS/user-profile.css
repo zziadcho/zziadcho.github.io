@@ -22,8 +22,7 @@
     justify-content: center;
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
-    margin-top: 150px;
+    margin: 120px auto 0 auto;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -75,12 +74,7 @@
 
 #grid {
     background-color: rgba(0, 0, 0, 0.5);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    row-gap: 50px;
     height: 560px;
-    overflow: hidden;
     padding: 10px;
     border-radius: 0 0 10px 10px;
     border-right: 1px solid #670039;

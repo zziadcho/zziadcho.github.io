@@ -51,9 +51,9 @@ const Audits = `
 export const DisplayProjectXP = async () => {
   const token = localStorage.getItem("JWT")
   if (!token) throw new Error("No authentication token provided")
-  
+
   const response = await FetchQL(Projects, token)
-  const data = response.data.transaction  
+  const data = response.data.transaction
   const svg = createHorizontalBarChart(data)
   return svg
 }
@@ -61,7 +61,7 @@ export const DisplayProjectXP = async () => {
 export const DisplayOvertimeXP = async () => {
   const token = localStorage.getItem("JWT")
   if (!token) throw new Error("No authentication token provided")
-  
+
   const response = await FetchQL(Projects, token)
   const data = response.data.transaction
   const svg = createXPProgressionChart(data)
@@ -71,7 +71,7 @@ export const DisplayOvertimeXP = async () => {
 export const DisplayAuditInfo = async () => {
   const token = localStorage.getItem("JWT")
   if (!token) throw new Error("No authentication token provided")
-  
+
   const response = await FetchQL(Audits, token);
   const auditData = response.data.user[0];
 
@@ -91,14 +91,26 @@ export const DisplayAuditInfo = async () => {
   const successRate = (successfulAudits / totalAudits * 100).toFixed(2);
   const failureRate = (failedAudits / totalAudits * 100).toFixed(2);
 
+
+  Constructor("div", {
+    textContent: `Total Audits: ${totalAudits}`,
+    style: "margin-bottom: 10px;"
+  }, container);
+
   Constructor("div", {
     textContent: `Successful Audits: ${successfulAudits} (${successRate}%)`,
-    style: "color: #90EE90;"
+    style: "color: #90EE90; margin-bottom: 10px;"
   }, container);
 
   Constructor("div", {
     textContent: `Failed Audits: ${failedAudits} (${failureRate}%)`,
-    style: "color: #FF6B6B;"
+    style: "color: #FF6B6B; margin-bottom: 10px;"
+  }, container);
+
+
+  Constructor("div", {
+    textContent: `Audit Ratio: ${auditData.auditRatio.toFixed(2)} (${(auditData.auditRatio * 100).toFixed(2)}%)`,
+    style: "color: #FFA500; margin-bottom: 10px;"
   }, container);
 
   const progressBar = Constructor("div", {
@@ -108,34 +120,8 @@ export const DisplayAuditInfo = async () => {
   Constructor("div", {
     style: `background: #4CAF50; height: 100%; width: ${successRate}%; display: flex; align-items: center; justify-content: center; font-size: 12px;`
   }, progressBar);
-  
-  Constructor("div", {
-    textContent: `Total Audits: ${totalAudits}`,
-    style: "margin-bottom: 10px;"
-  }, container);
 
-  Constructor("div", {
-    textContent: `Audit Ratio: ${auditData.auditRatio.toFixed(2)} (${(auditData.auditRatio * 100).toFixed(2)}%)`,
-    style: "color: #FFA500; margin-bottom: 10px;"
-  }, container);
 
-  Constructor("div", {
-    textContent: `📊 Success/Failure Ratio: ${(successfulAudits / failedAudits).toFixed(1)}:1`,
-    style: "margin-top: 10px;"
-  }, container);
-
-  Constructor("div", {
-    textContent: "--- Performance Summary ---",
-    style: "color: #875FFF; margin-top: 10px; margin-bottom: 5px;"
-  }, container);
-
-  Constructor("div", {
-    textContent: `• For every 10 audits: ~${Math.round(successfulAudits / totalAudits * 10)} pass, ~${Math.round(failedAudits / totalAudits * 10)} fail`
-  }, container);
-
-  Constructor("div", {
-    textContent: `• Average success rate: ${successRate}%`
-  }, container);
 
   return container;
 };
@@ -144,7 +130,7 @@ export const DisplayUserInfo = async () => {
   // Get fresh token each time function is called
   const token = localStorage.getItem("JWT")
   if (!token) throw new Error("No authentication token provided")
-  
+
   const response = await FetchQL(userinfoQuery, token)
   const userInfo = response.data.user[0].attrs
 

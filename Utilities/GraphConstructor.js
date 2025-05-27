@@ -165,7 +165,7 @@ export function createXPProgressionChart(data) {
                         style="cursor: pointer;"
                         data-project="${point.object?.name || 'Unknown'}"
                         data-date="${point.date.toLocaleDateString()}"
-                        data-xp="${point.amount}"
+                        data-xp="${(point.amount/1000).toFixed(2)}kB"
                         data-total="${point.cumulativeXP}" />
             `;
         }).join('')}
@@ -179,7 +179,7 @@ export function createXPProgressionChart(data) {
                       fill="#ffffff" 
                       font-size="12" 
                       text-anchor="end"
-                      opacity="0.7">${value}k</text>
+                      opacity="0.7">${value}kB</text>
             `;
         }).join('')}
         
@@ -191,7 +191,7 @@ export function createXPProgressionChart(data) {
         <text x="${margin.left + width + 10}" 
               y="${margin.top + 35}" 
               fill="#ffffff" 
-              font-size="14">${(maxXP / 1000).toFixed(0)}k</text>
+              font-size="14">${(maxXP / 1000).toFixed(2)}kB</text>
     `;
     
     // === TOOLTIP FUNCTIONALITY ===
@@ -224,7 +224,7 @@ export function createXPProgressionChart(data) {
                 <div><strong>${project}</strong></div>
                 <div>Date: ${date}</div>
                 <div>XP gained: +${xp}</div>
-                <div>Total XP: ${(total / 1000).toFixed(1)}k</div>
+                <div>Total XP: ${(total / 1000).toFixed(2)}kB</div>
             `;
             tooltip.style.display = 'block';
         }
@@ -244,4 +244,43 @@ export function createXPProgressionChart(data) {
     });
     
     return svg;
+}
+
+export async function Getauditdata() {
+  const audit_query = `
+    {
+  user {
+    audits {   
+      grade
+  }
+}
+}
+  `
+  const jwt = localStorage.getItem("jwt")
+  const response  = await fetch('https://learn.zone01oujda.ma/api/graphql-engine/v1/graphql',{
+
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json",
+        "Authorization" : `Bearer ${jwt}`
+      },
+      body : JSON.stringify({query : audit_query})
+
+  })
+  const tki = await response.json()
+  const tottal_filtered_audits = tki.data.user[0].audits.filter(audit => audit.grade !== null);
+  let succes = 0
+  let fail = 0  
+  tottal_filtered_audits.forEach(e => {   
+    if (e.grade >= 1 ){
+      succes++
+    }else{
+      fail++
+    }
+  });
+  const winrate = ((succes / tottal_filtered_audits.length)*100).toFixed(1) + "%"
+  const loserate  = ((fail /tottal_filtered_audits.length)*100).toFixed(1) + "%"
+  const total_audits = tottal_filtered_audits.length
+  Getgraphdata()
+  renderAuditData(total_audits, succes, fail, winrate, loserate)
 }

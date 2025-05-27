@@ -29,9 +29,9 @@ export const Terminal = () => {
             }
         }
     }
-    
+
     document.addEventListener("keydown", handleTerminalKeydown)
-    
+
     termcommand.addEventListener("keydown", (e) => {
         if (e.key === "Tab") {
             e.preventDefault()
@@ -88,6 +88,7 @@ export const Terminal = () => {
         switch (cmd.toLowerCase()) {
             case "clear":
                 clearcmd()
+                cmdLine("clear")
                 break
             case "help":
                 helpcmd()
@@ -160,7 +161,7 @@ export const Terminal = () => {
                     errorOutput(`Error loading overtime XP: ${error.message}`)
                 }
                 break
-                
+
             case "help":
                 graphHelpCmd()
                 break
@@ -293,7 +294,7 @@ export const Terminal = () => {
     const cmdOutput = (text) => {
         Constructor("div", {
             textContent: text,
-            style: "color: white; margin-left: 20px;"
+            style: "color: white;"
         }, grid)
         setTimeout(() => scrollToBottom(), 50)
     }
